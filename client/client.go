@@ -2,11 +2,31 @@ package client
 
 import (
 	"context"
+	"crypto/md5"
+	"encoding/hex"
 	"fmt"
 	"thrift-blobfuse/gen-go/dcache"
+	"time"
 
 	"github.com/apache/thrift/lib/go/thrift"
 )
+
+func computeMD5Hash(data []byte) string {
+	hash := md5.Sum(data)
+	return hex.EncodeToString(hash[:])
+}
+
+func getStripe(ctx context.Context, client *dcache.StripeServiceClient, stripeID string) (err error) {
+	stripe, err := client.GetStripe(ctx, stripeID)
+	if err != nil {
+		fmt.Printf("error getting stripe %v : %v\n", stripeID, err)
+	} else {
+		fmt.Printf("Got Stripe %v, ID: %s, Offset: %d, Length: %d, Hash: %s, Data length: %v\n", stripeID, stripe.ID, stripe.Offset, stripe.Length, stripe.Hash, len(stripe.Data))
+		fmt.Printf("Stripe Hash: %v\n", computeMD5Hash(stripe.Data))
+	}
+
+	return nil
+}
 
 func handleClient(client *dcache.StripeServiceClient) (err error) {
 	var defaultCtx = context.Background()
@@ -18,12 +38,15 @@ func handleClient(client *dcache.StripeServiceClient) (err error) {
 		return err
 	}
 
-	// get stripe of 16MB
-	stripe, err := client.GetStripe(defaultCtx, fmt.Sprintf("stripeID1-0-%d", stripeSize))
-	if err != nil {
-		fmt.Println("error getting stripe:", err)
-	} else {
-		fmt.Printf("Got Stripe, ID: %s, Offset: %d, Length: %d, Hash: %s, Data length: %v\n", stripe.ID, stripe.Offset, stripe.Length, stripe.Hash, len(stripe.Data))
+	for i := 1; i < 5; i++ {
+		// go func(i int) {
+		err = getStripe(defaultCtx, client, fmt.Sprintf("stripeID%d-0-%d", i, stripeSize))
+		if err != nil {
+			fmt.Printf("error getting stripe %v : %v\n", i, err)
+		} else {
+			fmt.Printf("Stripe get successfully %v\n", i)
+		}
+		// }(i)
 	}
 
 	// go func() {
@@ -57,7 +80,7 @@ func handleClient(client *dcache.StripeServiceClient) (err error) {
 	}
 	// }()
 
-	// time.Sleep(2 * time.Second)
+	time.Sleep(2 * time.Second)
 
 	// remove stripe
 	err = client.RemoveStripe(defaultCtx, fmt.Sprintf("stripeID1-%d-%d", stripeSize, stripeSize))

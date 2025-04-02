@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sync"
 	"thrift-blobfuse/gen-go/dcache"
 )
 
@@ -12,6 +13,7 @@ import (
 var _ dcache.StripeService = &StripeServiceHandler{}
 
 type StripeServiceHandler struct {
+	mu       sync.Mutex
 	cacheDir string
 }
 
@@ -47,13 +49,16 @@ func (h *StripeServiceHandler) GetStripe(ctx context.Context, stripeID string) (
 
 func (h *StripeServiceHandler) PutStripe(ctx context.Context, stripe *dcache.Stripe) error {
 	// should be written once, take locks
+	h.mu.Lock()
+	defer h.mu.Unlock()
+
 	fmt.Printf("PutStripe called for stripe ID %v, offset %v, stripe length %v, hash %v, data length %v\n",
 		stripe.ID, stripe.Offset, stripe.Length, stripe.Hash, len(stripe.Data))
 
 	stripeFilePath := filepath.Join(h.cacheDir, fmt.Sprintf("%s-%d-%d", stripe.ID, stripe.Offset, stripe.Length))
 	err := os.WriteFile(stripeFilePath, stripe.Data, 0400)
 	if err != nil {
-		fmt.Printf("Error writing stripe file [%v]\n", err.Error())
+		fmt.Printf("Error writing stripe file, hash %v [%v]\n", stripe.Hash, err.Error())
 		return err
 	}
 
