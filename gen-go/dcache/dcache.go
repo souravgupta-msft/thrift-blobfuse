@@ -267,6 +267,7 @@ func (p *Stripe) String() string {
 }
 
 type StripeService interface {
+  Ping(ctx context.Context) (_err error)
   // Parameters:
   //  - StripeID
   GetStripe(ctx context.Context, stripeID string) (_r *Stripe, _err error)
@@ -313,20 +314,32 @@ func (p *StripeServiceClient) SetLastResponseMeta_(meta thrift.ResponseMeta) {
   p.meta = meta
 }
 
-// Parameters:
-//  - StripeID
-func (p *StripeServiceClient) GetStripe(ctx context.Context, stripeID string) (_r *Stripe, _err error) {
-  var _args0 StripeServiceGetStripeArgs
-  _args0.StripeID = stripeID
-  var _result2 StripeServiceGetStripeResult
+func (p *StripeServiceClient) Ping(ctx context.Context) (_err error) {
+  var _args0 StripeServicePingArgs
+  var _result2 StripeServicePingResult
   var _meta1 thrift.ResponseMeta
-  _meta1, _err = p.Client_().Call(ctx, "GetStripe", &_args0, &_result2)
+  _meta1, _err = p.Client_().Call(ctx, "Ping", &_args0, &_result2)
   p.SetLastResponseMeta_(_meta1)
   if _err != nil {
     return
   }
-  if _ret3 := _result2.GetSuccess(); _ret3 != nil {
-    return _ret3, nil
+  return nil
+}
+
+// Parameters:
+//  - StripeID
+func (p *StripeServiceClient) GetStripe(ctx context.Context, stripeID string) (_r *Stripe, _err error) {
+  var _args3 StripeServiceGetStripeArgs
+  _args3.StripeID = stripeID
+  var _result5 StripeServiceGetStripeResult
+  var _meta4 thrift.ResponseMeta
+  _meta4, _err = p.Client_().Call(ctx, "GetStripe", &_args3, &_result5)
+  p.SetLastResponseMeta_(_meta4)
+  if _err != nil {
+    return
+  }
+  if _ret6 := _result5.GetSuccess(); _ret6 != nil {
+    return _ret6, nil
   }
   return nil, thrift.NewTApplicationException(thrift.MISSING_RESULT, "GetStripe failed: unknown result")
 }
@@ -334,12 +347,12 @@ func (p *StripeServiceClient) GetStripe(ctx context.Context, stripeID string) (_
 // Parameters:
 //  - Stripe
 func (p *StripeServiceClient) PutStripe(ctx context.Context, stripe *Stripe) (_err error) {
-  var _args4 StripeServicePutStripeArgs
-  _args4.Stripe = stripe
-  var _result6 StripeServicePutStripeResult
-  var _meta5 thrift.ResponseMeta
-  _meta5, _err = p.Client_().Call(ctx, "PutStripe", &_args4, &_result6)
-  p.SetLastResponseMeta_(_meta5)
+  var _args7 StripeServicePutStripeArgs
+  _args7.Stripe = stripe
+  var _result9 StripeServicePutStripeResult
+  var _meta8 thrift.ResponseMeta
+  _meta8, _err = p.Client_().Call(ctx, "PutStripe", &_args7, &_result9)
+  p.SetLastResponseMeta_(_meta8)
   if _err != nil {
     return
   }
@@ -349,12 +362,12 @@ func (p *StripeServiceClient) PutStripe(ctx context.Context, stripe *Stripe) (_e
 // Parameters:
 //  - StripeID
 func (p *StripeServiceClient) RemoveStripe(ctx context.Context, stripeID string) (_err error) {
-  var _args7 StripeServiceRemoveStripeArgs
-  _args7.StripeID = stripeID
-  var _result9 StripeServiceRemoveStripeResult
-  var _meta8 thrift.ResponseMeta
-  _meta8, _err = p.Client_().Call(ctx, "RemoveStripe", &_args7, &_result9)
-  p.SetLastResponseMeta_(_meta8)
+  var _args10 StripeServiceRemoveStripeArgs
+  _args10.StripeID = stripeID
+  var _result12 StripeServiceRemoveStripeResult
+  var _meta11 thrift.ResponseMeta
+  _meta11, _err = p.Client_().Call(ctx, "RemoveStripe", &_args10, &_result12)
+  p.SetLastResponseMeta_(_meta11)
   if _err != nil {
     return
   }
@@ -381,11 +394,12 @@ func (p *StripeServiceProcessor) ProcessorMap() map[string]thrift.TProcessorFunc
 
 func NewStripeServiceProcessor(handler StripeService) *StripeServiceProcessor {
 
-  self10 := &StripeServiceProcessor{handler:handler, processorMap:make(map[string]thrift.TProcessorFunction)}
-  self10.processorMap["GetStripe"] = &stripeServiceProcessorGetStripe{handler:handler}
-  self10.processorMap["PutStripe"] = &stripeServiceProcessorPutStripe{handler:handler}
-  self10.processorMap["RemoveStripe"] = &stripeServiceProcessorRemoveStripe{handler:handler}
-return self10
+  self13 := &StripeServiceProcessor{handler:handler, processorMap:make(map[string]thrift.TProcessorFunction)}
+  self13.processorMap["Ping"] = &stripeServiceProcessorPing{handler:handler}
+  self13.processorMap["GetStripe"] = &stripeServiceProcessorGetStripe{handler:handler}
+  self13.processorMap["PutStripe"] = &stripeServiceProcessorPutStripe{handler:handler}
+  self13.processorMap["RemoveStripe"] = &stripeServiceProcessorRemoveStripe{handler:handler}
+return self13
 }
 
 func (p *StripeServiceProcessor) Process(ctx context.Context, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
@@ -396,13 +410,89 @@ func (p *StripeServiceProcessor) Process(ctx context.Context, iprot, oprot thrif
   }
   iprot.Skip(ctx, thrift.STRUCT)
   iprot.ReadMessageEnd(ctx)
-  x11 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function " + name)
+  x14 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function " + name)
   oprot.WriteMessageBegin(ctx, name, thrift.EXCEPTION, seqId)
-  x11.Write(ctx, oprot)
+  x14.Write(ctx, oprot)
   oprot.WriteMessageEnd(ctx)
   oprot.Flush(ctx)
-  return false, x11
+  return false, x14
 
+}
+
+type stripeServiceProcessorPing struct {
+  handler StripeService
+}
+
+func (p *stripeServiceProcessorPing) Process(ctx context.Context, seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+  args := StripeServicePingArgs{}
+  var err2 error
+  if err2 = args.Read(ctx, iprot); err2 != nil {
+    iprot.ReadMessageEnd(ctx)
+    x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err2.Error())
+    oprot.WriteMessageBegin(ctx, "Ping", thrift.EXCEPTION, seqId)
+    x.Write(ctx, oprot)
+    oprot.WriteMessageEnd(ctx)
+    oprot.Flush(ctx)
+    return false, thrift.WrapTException(err2)
+  }
+  iprot.ReadMessageEnd(ctx)
+
+  tickerCancel := func() {}
+  // Start a goroutine to do server side connectivity check.
+  if thrift.ServerConnectivityCheckInterval > 0 {
+    var cancel context.CancelFunc
+    ctx, cancel = context.WithCancel(ctx)
+    defer cancel()
+    var tickerCtx context.Context
+    tickerCtx, tickerCancel = context.WithCancel(context.Background())
+    defer tickerCancel()
+    go func(ctx context.Context, cancel context.CancelFunc) {
+      ticker := time.NewTicker(thrift.ServerConnectivityCheckInterval)
+      defer ticker.Stop()
+      for {
+        select {
+        case <-ctx.Done():
+          return
+        case <-ticker.C:
+          if !iprot.Transport().IsOpen() {
+            cancel()
+            return
+          }
+        }
+      }
+    }(tickerCtx, cancel)
+  }
+
+  result := StripeServicePingResult{}
+  if err2 = p.handler.Ping(ctx); err2 != nil {
+    tickerCancel()
+    if err2 == thrift.ErrAbandonRequest {
+      return false, thrift.WrapTException(err2)
+    }
+    x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing Ping: " + err2.Error())
+    oprot.WriteMessageBegin(ctx, "Ping", thrift.EXCEPTION, seqId)
+    x.Write(ctx, oprot)
+    oprot.WriteMessageEnd(ctx)
+    oprot.Flush(ctx)
+    return true, thrift.WrapTException(err2)
+  }
+  tickerCancel()
+  if err2 = oprot.WriteMessageBegin(ctx, "Ping", thrift.REPLY, seqId); err2 != nil {
+    err = thrift.WrapTException(err2)
+  }
+  if err2 = result.Write(ctx, oprot); err == nil && err2 != nil {
+    err = thrift.WrapTException(err2)
+  }
+  if err2 = oprot.WriteMessageEnd(ctx); err == nil && err2 != nil {
+    err = thrift.WrapTException(err2)
+  }
+  if err2 = oprot.Flush(ctx); err == nil && err2 != nil {
+    err = thrift.WrapTException(err2)
+  }
+  if err != nil {
+    return
+  }
+  return true, err
 }
 
 type stripeServiceProcessorGetStripe struct {
@@ -638,6 +728,108 @@ func (p *stripeServiceProcessorRemoveStripe) Process(ctx context.Context, seqId 
 
 
 // HELPER FUNCTIONS AND STRUCTURES
+
+type StripeServicePingArgs struct {
+}
+
+func NewStripeServicePingArgs() *StripeServicePingArgs {
+  return &StripeServicePingArgs{}
+}
+
+func (p *StripeServicePingArgs) Read(ctx context.Context, iprot thrift.TProtocol) error {
+  if _, err := iprot.ReadStructBegin(ctx); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+  }
+
+
+  for {
+    _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin(ctx)
+    if err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+    }
+    if fieldTypeId == thrift.STOP { break; }
+    if err := iprot.Skip(ctx, fieldTypeId); err != nil {
+      return err
+    }
+    if err := iprot.ReadFieldEnd(ctx); err != nil {
+      return err
+    }
+  }
+  if err := iprot.ReadStructEnd(ctx); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+  }
+  return nil
+}
+
+func (p *StripeServicePingArgs) Write(ctx context.Context, oprot thrift.TProtocol) error {
+  if err := oprot.WriteStructBegin(ctx, "Ping_args"); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
+  if p != nil {
+  }
+  if err := oprot.WriteFieldStop(ctx); err != nil {
+    return thrift.PrependError("write field stop error: ", err) }
+  if err := oprot.WriteStructEnd(ctx); err != nil {
+    return thrift.PrependError("write struct stop error: ", err) }
+  return nil
+}
+
+func (p *StripeServicePingArgs) String() string {
+  if p == nil {
+    return "<nil>"
+  }
+  return fmt.Sprintf("StripeServicePingArgs(%+v)", *p)
+}
+
+type StripeServicePingResult struct {
+}
+
+func NewStripeServicePingResult() *StripeServicePingResult {
+  return &StripeServicePingResult{}
+}
+
+func (p *StripeServicePingResult) Read(ctx context.Context, iprot thrift.TProtocol) error {
+  if _, err := iprot.ReadStructBegin(ctx); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+  }
+
+
+  for {
+    _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin(ctx)
+    if err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+    }
+    if fieldTypeId == thrift.STOP { break; }
+    if err := iprot.Skip(ctx, fieldTypeId); err != nil {
+      return err
+    }
+    if err := iprot.ReadFieldEnd(ctx); err != nil {
+      return err
+    }
+  }
+  if err := iprot.ReadStructEnd(ctx); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+  }
+  return nil
+}
+
+func (p *StripeServicePingResult) Write(ctx context.Context, oprot thrift.TProtocol) error {
+  if err := oprot.WriteStructBegin(ctx, "Ping_result"); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
+  if p != nil {
+  }
+  if err := oprot.WriteFieldStop(ctx); err != nil {
+    return thrift.PrependError("write field stop error: ", err) }
+  if err := oprot.WriteStructEnd(ctx); err != nil {
+    return thrift.PrependError("write struct stop error: ", err) }
+  return nil
+}
+
+func (p *StripeServicePingResult) String() string {
+  if p == nil {
+    return "<nil>"
+  }
+  return fmt.Sprintf("StripeServicePingResult(%+v)", *p)
+}
 
 // Attributes:
 //  - StripeID

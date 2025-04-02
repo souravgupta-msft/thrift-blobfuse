@@ -12,6 +12,12 @@ func handleClient(client *dcache.StripeServiceClient) (err error) {
 	var defaultCtx = context.Background()
 	var stripeSize int64 = 16 * 1024 * 1024 //16MB
 
+	err = client.Ping(defaultCtx)
+	if err != nil {
+		fmt.Println("error pinging server:", err)
+		return err
+	}
+
 	// get stripe of 16MB
 	stripe, err := client.GetStripe(defaultCtx, fmt.Sprintf("stripeID1-0-%d", stripeSize))
 	if err != nil {

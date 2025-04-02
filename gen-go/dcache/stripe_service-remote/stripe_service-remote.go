@@ -22,6 +22,7 @@ func Usage() {
   fmt.Fprintln(os.Stderr, "Usage of ", os.Args[0], " [-h host:port] [-u url] [-f[ramed]] function [arg1 [arg2...]]:")
   flag.PrintDefaults()
   fmt.Fprintln(os.Stderr, "\nFunctions:")
+  fmt.Fprintln(os.Stderr, "  void Ping()")
   fmt.Fprintln(os.Stderr, "  Stripe GetStripe(string stripeID)")
   fmt.Fprintln(os.Stderr, "  void PutStripe(Stripe stripe)")
   fmt.Fprintln(os.Stderr, "  void RemoveStripe(string stripeID)")
@@ -147,6 +148,14 @@ func main() {
   }
   
   switch cmd {
+  case "Ping":
+    if flag.NArg() - 1 != 0 {
+      fmt.Fprintln(os.Stderr, "Ping requires 0 args")
+      flag.Usage()
+    }
+    fmt.Print(client.Ping(context.Background()))
+    fmt.Print("\n")
+    break
   case "GetStripe":
     if flag.NArg() - 1 != 1 {
       fmt.Fprintln(os.Stderr, "GetStripe requires 1 args")
@@ -162,19 +171,19 @@ func main() {
       fmt.Fprintln(os.Stderr, "PutStripe requires 1 args")
       flag.Usage()
     }
-    arg13 := flag.Arg(1)
-    mbTrans14 := thrift.NewTMemoryBufferLen(len(arg13))
-    defer mbTrans14.Close()
-    _, err15 := mbTrans14.WriteString(arg13)
-    if err15 != nil {
+    arg16 := flag.Arg(1)
+    mbTrans17 := thrift.NewTMemoryBufferLen(len(arg16))
+    defer mbTrans17.Close()
+    _, err18 := mbTrans17.WriteString(arg16)
+    if err18 != nil {
       Usage()
       return
     }
-    factory16 := thrift.NewTJSONProtocolFactory()
-    jsProt17 := factory16.GetProtocol(mbTrans14)
+    factory19 := thrift.NewTJSONProtocolFactory()
+    jsProt20 := factory19.GetProtocol(mbTrans17)
     argvalue0 := dcache.NewStripe()
-    err18 := argvalue0.Read(context.Background(), jsProt17)
-    if err18 != nil {
+    err21 := argvalue0.Read(context.Background(), jsProt20)
+    if err21 != nil {
       Usage()
       return
     }

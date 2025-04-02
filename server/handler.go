@@ -21,6 +21,11 @@ func NewStripeServiceHandler() *StripeServiceHandler {
 	}
 }
 
+func (h *StripeServiceHandler) Ping(ctx context.Context) error {
+	fmt.Println("Ping called")
+	return nil
+}
+
 func (h *StripeServiceHandler) GetStripe(ctx context.Context, stripeID string) (*dcache.Stripe, error) {
 	fmt.Printf("GetStripe called for stripe ID %v\n", stripeID)
 

@@ -11,6 +11,9 @@ struct Stripe {
 
 // Define the service with RPC methods
 service StripeService {
+    // check if the node is reachable
+    void Ping()
+
     // Fetch a stripe from the node
     Stripe GetStripe(1: string stripeID)
 
