@@ -15,11 +15,22 @@ service StripeService {
     void Ping()
 
     // Fetch a stripe from the node
-    Stripe GetStripe(1: string stripeID)
+    GetStripeResponse GetStripe(1: GetStripeRequest request)
 
     // Store a stripe on the node
     void PutStripe(1: Stripe stripe)
 
     // Delete a stripe from the node
     void RemoveStripe(1: string stripeID)
+}
+
+struct GetStripeRequest {
+    1: string stripeID,
+    2: binary data,
+}
+
+struct GetStripeResponse {
+    1: i64 bytesRead,
+    2: binary data,
+    3: string hash
 }

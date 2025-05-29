@@ -266,11 +266,324 @@ func (p *Stripe) String() string {
   return fmt.Sprintf("Stripe(%+v)", *p)
 }
 
+// Attributes:
+//  - StripeID
+//  - Data
+type GetStripeRequest struct {
+  StripeID string `thrift:"stripeID,1" db:"stripeID" json:"stripeID"`
+  Data []byte `thrift:"data,2" db:"data" json:"data"`
+}
+
+func NewGetStripeRequest() *GetStripeRequest {
+  return &GetStripeRequest{}
+}
+
+
+func (p *GetStripeRequest) GetStripeID() string {
+  return p.StripeID
+}
+
+func (p *GetStripeRequest) GetData() []byte {
+  return p.Data
+}
+func (p *GetStripeRequest) Read(ctx context.Context, iprot thrift.TProtocol) error {
+  if _, err := iprot.ReadStructBegin(ctx); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+  }
+
+
+  for {
+    _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin(ctx)
+    if err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+    }
+    if fieldTypeId == thrift.STOP { break; }
+    switch fieldId {
+    case 1:
+      if fieldTypeId == thrift.STRING {
+        if err := p.ReadField1(ctx, iprot); err != nil {
+          return err
+        }
+      } else {
+        if err := iprot.Skip(ctx, fieldTypeId); err != nil {
+          return err
+        }
+      }
+    case 2:
+      if fieldTypeId == thrift.STRING {
+        if err := p.ReadField2(ctx, iprot); err != nil {
+          return err
+        }
+      } else {
+        if err := iprot.Skip(ctx, fieldTypeId); err != nil {
+          return err
+        }
+      }
+    default:
+      if err := iprot.Skip(ctx, fieldTypeId); err != nil {
+        return err
+      }
+    }
+    if err := iprot.ReadFieldEnd(ctx); err != nil {
+      return err
+    }
+  }
+  if err := iprot.ReadStructEnd(ctx); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+  }
+  return nil
+}
+
+func (p *GetStripeRequest)  ReadField1(ctx context.Context, iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadString(ctx); err != nil {
+  return thrift.PrependError("error reading field 1: ", err)
+} else {
+  p.StripeID = v
+}
+  return nil
+}
+
+func (p *GetStripeRequest)  ReadField2(ctx context.Context, iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadBinary(ctx); err != nil {
+  return thrift.PrependError("error reading field 2: ", err)
+} else {
+  p.Data = v
+}
+  return nil
+}
+
+func (p *GetStripeRequest) Write(ctx context.Context, oprot thrift.TProtocol) error {
+  if err := oprot.WriteStructBegin(ctx, "GetStripeRequest"); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
+  if p != nil {
+    if err := p.writeField1(ctx, oprot); err != nil { return err }
+    if err := p.writeField2(ctx, oprot); err != nil { return err }
+  }
+  if err := oprot.WriteFieldStop(ctx); err != nil {
+    return thrift.PrependError("write field stop error: ", err) }
+  if err := oprot.WriteStructEnd(ctx); err != nil {
+    return thrift.PrependError("write struct stop error: ", err) }
+  return nil
+}
+
+func (p *GetStripeRequest) writeField1(ctx context.Context, oprot thrift.TProtocol) (err error) {
+  if err := oprot.WriteFieldBegin(ctx, "stripeID", thrift.STRING, 1); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:stripeID: ", p), err) }
+  if err := oprot.WriteString(ctx, string(p.StripeID)); err != nil {
+  return thrift.PrependError(fmt.Sprintf("%T.stripeID (1) field write error: ", p), err) }
+  if err := oprot.WriteFieldEnd(ctx); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field end error 1:stripeID: ", p), err) }
+  return err
+}
+
+func (p *GetStripeRequest) writeField2(ctx context.Context, oprot thrift.TProtocol) (err error) {
+  if err := oprot.WriteFieldBegin(ctx, "data", thrift.STRING, 2); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:data: ", p), err) }
+  if err := oprot.WriteBinary(ctx, p.Data); err != nil {
+  return thrift.PrependError(fmt.Sprintf("%T.data (2) field write error: ", p), err) }
+  if err := oprot.WriteFieldEnd(ctx); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field end error 2:data: ", p), err) }
+  return err
+}
+
+func (p *GetStripeRequest) Equals(other *GetStripeRequest) bool {
+  if p == other {
+    return true
+  } else if p == nil || other == nil {
+    return false
+  }
+  if p.StripeID != other.StripeID { return false }
+  if bytes.Compare(p.Data, other.Data) != 0 { return false }
+  return true
+}
+
+func (p *GetStripeRequest) String() string {
+  if p == nil {
+    return "<nil>"
+  }
+  return fmt.Sprintf("GetStripeRequest(%+v)", *p)
+}
+
+// Attributes:
+//  - BytesRead
+//  - Data
+//  - Hash
+type GetStripeResponse struct {
+  BytesRead int64 `thrift:"bytesRead,1" db:"bytesRead" json:"bytesRead"`
+  Data []byte `thrift:"data,2" db:"data" json:"data"`
+  Hash string `thrift:"hash,3" db:"hash" json:"hash"`
+}
+
+func NewGetStripeResponse() *GetStripeResponse {
+  return &GetStripeResponse{}
+}
+
+
+func (p *GetStripeResponse) GetBytesRead() int64 {
+  return p.BytesRead
+}
+
+func (p *GetStripeResponse) GetData() []byte {
+  return p.Data
+}
+
+func (p *GetStripeResponse) GetHash() string {
+  return p.Hash
+}
+func (p *GetStripeResponse) Read(ctx context.Context, iprot thrift.TProtocol) error {
+  if _, err := iprot.ReadStructBegin(ctx); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+  }
+
+
+  for {
+    _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin(ctx)
+    if err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+    }
+    if fieldTypeId == thrift.STOP { break; }
+    switch fieldId {
+    case 1:
+      if fieldTypeId == thrift.I64 {
+        if err := p.ReadField1(ctx, iprot); err != nil {
+          return err
+        }
+      } else {
+        if err := iprot.Skip(ctx, fieldTypeId); err != nil {
+          return err
+        }
+      }
+    case 2:
+      if fieldTypeId == thrift.STRING {
+        if err := p.ReadField2(ctx, iprot); err != nil {
+          return err
+        }
+      } else {
+        if err := iprot.Skip(ctx, fieldTypeId); err != nil {
+          return err
+        }
+      }
+    case 3:
+      if fieldTypeId == thrift.STRING {
+        if err := p.ReadField3(ctx, iprot); err != nil {
+          return err
+        }
+      } else {
+        if err := iprot.Skip(ctx, fieldTypeId); err != nil {
+          return err
+        }
+      }
+    default:
+      if err := iprot.Skip(ctx, fieldTypeId); err != nil {
+        return err
+      }
+    }
+    if err := iprot.ReadFieldEnd(ctx); err != nil {
+      return err
+    }
+  }
+  if err := iprot.ReadStructEnd(ctx); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+  }
+  return nil
+}
+
+func (p *GetStripeResponse)  ReadField1(ctx context.Context, iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadI64(ctx); err != nil {
+  return thrift.PrependError("error reading field 1: ", err)
+} else {
+  p.BytesRead = v
+}
+  return nil
+}
+
+func (p *GetStripeResponse)  ReadField2(ctx context.Context, iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadBinary(ctx); err != nil {
+  return thrift.PrependError("error reading field 2: ", err)
+} else {
+  p.Data = v
+}
+  return nil
+}
+
+func (p *GetStripeResponse)  ReadField3(ctx context.Context, iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadString(ctx); err != nil {
+  return thrift.PrependError("error reading field 3: ", err)
+} else {
+  p.Hash = v
+}
+  return nil
+}
+
+func (p *GetStripeResponse) Write(ctx context.Context, oprot thrift.TProtocol) error {
+  if err := oprot.WriteStructBegin(ctx, "GetStripeResponse"); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
+  if p != nil {
+    if err := p.writeField1(ctx, oprot); err != nil { return err }
+    if err := p.writeField2(ctx, oprot); err != nil { return err }
+    if err := p.writeField3(ctx, oprot); err != nil { return err }
+  }
+  if err := oprot.WriteFieldStop(ctx); err != nil {
+    return thrift.PrependError("write field stop error: ", err) }
+  if err := oprot.WriteStructEnd(ctx); err != nil {
+    return thrift.PrependError("write struct stop error: ", err) }
+  return nil
+}
+
+func (p *GetStripeResponse) writeField1(ctx context.Context, oprot thrift.TProtocol) (err error) {
+  if err := oprot.WriteFieldBegin(ctx, "bytesRead", thrift.I64, 1); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:bytesRead: ", p), err) }
+  if err := oprot.WriteI64(ctx, int64(p.BytesRead)); err != nil {
+  return thrift.PrependError(fmt.Sprintf("%T.bytesRead (1) field write error: ", p), err) }
+  if err := oprot.WriteFieldEnd(ctx); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field end error 1:bytesRead: ", p), err) }
+  return err
+}
+
+func (p *GetStripeResponse) writeField2(ctx context.Context, oprot thrift.TProtocol) (err error) {
+  if err := oprot.WriteFieldBegin(ctx, "data", thrift.STRING, 2); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:data: ", p), err) }
+  if err := oprot.WriteBinary(ctx, p.Data); err != nil {
+  return thrift.PrependError(fmt.Sprintf("%T.data (2) field write error: ", p), err) }
+  if err := oprot.WriteFieldEnd(ctx); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field end error 2:data: ", p), err) }
+  return err
+}
+
+func (p *GetStripeResponse) writeField3(ctx context.Context, oprot thrift.TProtocol) (err error) {
+  if err := oprot.WriteFieldBegin(ctx, "hash", thrift.STRING, 3); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:hash: ", p), err) }
+  if err := oprot.WriteString(ctx, string(p.Hash)); err != nil {
+  return thrift.PrependError(fmt.Sprintf("%T.hash (3) field write error: ", p), err) }
+  if err := oprot.WriteFieldEnd(ctx); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field end error 3:hash: ", p), err) }
+  return err
+}
+
+func (p *GetStripeResponse) Equals(other *GetStripeResponse) bool {
+  if p == other {
+    return true
+  } else if p == nil || other == nil {
+    return false
+  }
+  if p.BytesRead != other.BytesRead { return false }
+  if bytes.Compare(p.Data, other.Data) != 0 { return false }
+  if p.Hash != other.Hash { return false }
+  return true
+}
+
+func (p *GetStripeResponse) String() string {
+  if p == nil {
+    return "<nil>"
+  }
+  return fmt.Sprintf("GetStripeResponse(%+v)", *p)
+}
+
 type StripeService interface {
   Ping(ctx context.Context) (_err error)
   // Parameters:
-  //  - StripeID
-  GetStripe(ctx context.Context, stripeID string) (_r *Stripe, _err error)
+  //  - Request
+  GetStripe(ctx context.Context, request *GetStripeRequest) (_r *GetStripeResponse, _err error)
   // Parameters:
   //  - Stripe
   PutStripe(ctx context.Context, stripe *Stripe) (_err error)
@@ -327,10 +640,10 @@ func (p *StripeServiceClient) Ping(ctx context.Context) (_err error) {
 }
 
 // Parameters:
-//  - StripeID
-func (p *StripeServiceClient) GetStripe(ctx context.Context, stripeID string) (_r *Stripe, _err error) {
+//  - Request
+func (p *StripeServiceClient) GetStripe(ctx context.Context, request *GetStripeRequest) (_r *GetStripeResponse, _err error) {
   var _args3 StripeServiceGetStripeArgs
-  _args3.StripeID = stripeID
+  _args3.Request = request
   var _result5 StripeServiceGetStripeResult
   var _meta4 thrift.ResponseMeta
   _meta4, _err = p.Client_().Call(ctx, "GetStripe", &_args3, &_result5)
@@ -338,21 +651,18 @@ func (p *StripeServiceClient) GetStripe(ctx context.Context, stripeID string) (_
   if _err != nil {
     return
   }
-  if _ret6 := _result5.GetSuccess(); _ret6 != nil {
-    return _ret6, nil
-  }
-  return nil, thrift.NewTApplicationException(thrift.MISSING_RESULT, "GetStripe failed: unknown result")
+  return _result5.GetSuccess(), nil
 }
 
 // Parameters:
 //  - Stripe
 func (p *StripeServiceClient) PutStripe(ctx context.Context, stripe *Stripe) (_err error) {
-  var _args7 StripeServicePutStripeArgs
-  _args7.Stripe = stripe
-  var _result9 StripeServicePutStripeResult
-  var _meta8 thrift.ResponseMeta
-  _meta8, _err = p.Client_().Call(ctx, "PutStripe", &_args7, &_result9)
-  p.SetLastResponseMeta_(_meta8)
+  var _args6 StripeServicePutStripeArgs
+  _args6.Stripe = stripe
+  var _result8 StripeServicePutStripeResult
+  var _meta7 thrift.ResponseMeta
+  _meta7, _err = p.Client_().Call(ctx, "PutStripe", &_args6, &_result8)
+  p.SetLastResponseMeta_(_meta7)
   if _err != nil {
     return
   }
@@ -362,12 +672,12 @@ func (p *StripeServiceClient) PutStripe(ctx context.Context, stripe *Stripe) (_e
 // Parameters:
 //  - StripeID
 func (p *StripeServiceClient) RemoveStripe(ctx context.Context, stripeID string) (_err error) {
-  var _args10 StripeServiceRemoveStripeArgs
-  _args10.StripeID = stripeID
-  var _result12 StripeServiceRemoveStripeResult
-  var _meta11 thrift.ResponseMeta
-  _meta11, _err = p.Client_().Call(ctx, "RemoveStripe", &_args10, &_result12)
-  p.SetLastResponseMeta_(_meta11)
+  var _args9 StripeServiceRemoveStripeArgs
+  _args9.StripeID = stripeID
+  var _result11 StripeServiceRemoveStripeResult
+  var _meta10 thrift.ResponseMeta
+  _meta10, _err = p.Client_().Call(ctx, "RemoveStripe", &_args9, &_result11)
+  p.SetLastResponseMeta_(_meta10)
   if _err != nil {
     return
   }
@@ -394,12 +704,12 @@ func (p *StripeServiceProcessor) ProcessorMap() map[string]thrift.TProcessorFunc
 
 func NewStripeServiceProcessor(handler StripeService) *StripeServiceProcessor {
 
-  self13 := &StripeServiceProcessor{handler:handler, processorMap:make(map[string]thrift.TProcessorFunction)}
-  self13.processorMap["Ping"] = &stripeServiceProcessorPing{handler:handler}
-  self13.processorMap["GetStripe"] = &stripeServiceProcessorGetStripe{handler:handler}
-  self13.processorMap["PutStripe"] = &stripeServiceProcessorPutStripe{handler:handler}
-  self13.processorMap["RemoveStripe"] = &stripeServiceProcessorRemoveStripe{handler:handler}
-return self13
+  self12 := &StripeServiceProcessor{handler:handler, processorMap:make(map[string]thrift.TProcessorFunction)}
+  self12.processorMap["Ping"] = &stripeServiceProcessorPing{handler:handler}
+  self12.processorMap["GetStripe"] = &stripeServiceProcessorGetStripe{handler:handler}
+  self12.processorMap["PutStripe"] = &stripeServiceProcessorPutStripe{handler:handler}
+  self12.processorMap["RemoveStripe"] = &stripeServiceProcessorRemoveStripe{handler:handler}
+return self12
 }
 
 func (p *StripeServiceProcessor) Process(ctx context.Context, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
@@ -410,12 +720,12 @@ func (p *StripeServiceProcessor) Process(ctx context.Context, iprot, oprot thrif
   }
   iprot.Skip(ctx, thrift.STRUCT)
   iprot.ReadMessageEnd(ctx)
-  x14 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function " + name)
+  x13 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function " + name)
   oprot.WriteMessageBegin(ctx, name, thrift.EXCEPTION, seqId)
-  x14.Write(ctx, oprot)
+  x13.Write(ctx, oprot)
   oprot.WriteMessageEnd(ctx)
   oprot.Flush(ctx)
-  return false, x14
+  return false, x13
 
 }
 
@@ -540,8 +850,8 @@ func (p *stripeServiceProcessorGetStripe) Process(ctx context.Context, seqId int
   }
 
   result := StripeServiceGetStripeResult{}
-  var retval *Stripe
-  if retval, err2 = p.handler.GetStripe(ctx, args.StripeID); err2 != nil {
+  var retval *GetStripeResponse
+  if retval, err2 = p.handler.GetStripe(ctx, args.Request); err2 != nil {
     tickerCancel()
     if err2 == thrift.ErrAbandonRequest {
       return false, thrift.WrapTException(err2)
@@ -832,19 +1142,26 @@ func (p *StripeServicePingResult) String() string {
 }
 
 // Attributes:
-//  - StripeID
+//  - Request
 type StripeServiceGetStripeArgs struct {
-  StripeID string `thrift:"stripeID,1" db:"stripeID" json:"stripeID"`
+  Request *GetStripeRequest `thrift:"request,1" db:"request" json:"request"`
 }
 
 func NewStripeServiceGetStripeArgs() *StripeServiceGetStripeArgs {
   return &StripeServiceGetStripeArgs{}
 }
 
-
-func (p *StripeServiceGetStripeArgs) GetStripeID() string {
-  return p.StripeID
+var StripeServiceGetStripeArgs_Request_DEFAULT *GetStripeRequest
+func (p *StripeServiceGetStripeArgs) GetRequest() *GetStripeRequest {
+  if !p.IsSetRequest() {
+    return StripeServiceGetStripeArgs_Request_DEFAULT
+  }
+return p.Request
 }
+func (p *StripeServiceGetStripeArgs) IsSetRequest() bool {
+  return p.Request != nil
+}
+
 func (p *StripeServiceGetStripeArgs) Read(ctx context.Context, iprot thrift.TProtocol) error {
   if _, err := iprot.ReadStructBegin(ctx); err != nil {
     return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
@@ -859,7 +1176,7 @@ func (p *StripeServiceGetStripeArgs) Read(ctx context.Context, iprot thrift.TPro
     if fieldTypeId == thrift.STOP { break; }
     switch fieldId {
     case 1:
-      if fieldTypeId == thrift.STRING {
+      if fieldTypeId == thrift.STRUCT {
         if err := p.ReadField1(ctx, iprot); err != nil {
           return err
         }
@@ -884,11 +1201,10 @@ func (p *StripeServiceGetStripeArgs) Read(ctx context.Context, iprot thrift.TPro
 }
 
 func (p *StripeServiceGetStripeArgs)  ReadField1(ctx context.Context, iprot thrift.TProtocol) error {
-  if v, err := iprot.ReadString(ctx); err != nil {
-  return thrift.PrependError("error reading field 1: ", err)
-} else {
-  p.StripeID = v
-}
+  p.Request = &GetStripeRequest{}
+  if err := p.Request.Read(ctx, iprot); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Request), err)
+  }
   return nil
 }
 
@@ -906,12 +1222,13 @@ func (p *StripeServiceGetStripeArgs) Write(ctx context.Context, oprot thrift.TPr
 }
 
 func (p *StripeServiceGetStripeArgs) writeField1(ctx context.Context, oprot thrift.TProtocol) (err error) {
-  if err := oprot.WriteFieldBegin(ctx, "stripeID", thrift.STRING, 1); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:stripeID: ", p), err) }
-  if err := oprot.WriteString(ctx, string(p.StripeID)); err != nil {
-  return thrift.PrependError(fmt.Sprintf("%T.stripeID (1) field write error: ", p), err) }
+  if err := oprot.WriteFieldBegin(ctx, "request", thrift.STRUCT, 1); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:request: ", p), err) }
+  if err := p.Request.Write(ctx, oprot); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Request), err)
+  }
   if err := oprot.WriteFieldEnd(ctx); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field end error 1:stripeID: ", p), err) }
+    return thrift.PrependError(fmt.Sprintf("%T write field end error 1:request: ", p), err) }
   return err
 }
 
@@ -925,15 +1242,15 @@ func (p *StripeServiceGetStripeArgs) String() string {
 // Attributes:
 //  - Success
 type StripeServiceGetStripeResult struct {
-  Success *Stripe `thrift:"success,0" db:"success" json:"success,omitempty"`
+  Success *GetStripeResponse `thrift:"success,0" db:"success" json:"success,omitempty"`
 }
 
 func NewStripeServiceGetStripeResult() *StripeServiceGetStripeResult {
   return &StripeServiceGetStripeResult{}
 }
 
-var StripeServiceGetStripeResult_Success_DEFAULT *Stripe
-func (p *StripeServiceGetStripeResult) GetSuccess() *Stripe {
+var StripeServiceGetStripeResult_Success_DEFAULT *GetStripeResponse
+func (p *StripeServiceGetStripeResult) GetSuccess() *GetStripeResponse {
   if !p.IsSetSuccess() {
     return StripeServiceGetStripeResult_Success_DEFAULT
   }
@@ -982,7 +1299,7 @@ func (p *StripeServiceGetStripeResult) Read(ctx context.Context, iprot thrift.TP
 }
 
 func (p *StripeServiceGetStripeResult)  ReadField0(ctx context.Context, iprot thrift.TProtocol) error {
-  p.Success = &Stripe{}
+  p.Success = &GetStripeResponse{}
   if err := p.Success.Read(ctx, iprot); err != nil {
     return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Success), err)
   }

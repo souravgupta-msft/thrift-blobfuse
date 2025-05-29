@@ -13,7 +13,7 @@ import (
 	"strconv"
 	"strings"
 	thrift "github.com/apache/thrift/lib/go/thrift"
-	"thrift-blobfuse/gen-go/dcache"
+	"dcache"
 )
 
 var _ = dcache.GoUnusedProtection__
@@ -23,7 +23,7 @@ func Usage() {
   flag.PrintDefaults()
   fmt.Fprintln(os.Stderr, "\nFunctions:")
   fmt.Fprintln(os.Stderr, "  void Ping()")
-  fmt.Fprintln(os.Stderr, "  Stripe GetStripe(string stripeID)")
+  fmt.Fprintln(os.Stderr, "  GetStripeResponse GetStripe(GetStripeRequest request)")
   fmt.Fprintln(os.Stderr, "  void PutStripe(Stripe stripe)")
   fmt.Fprintln(os.Stderr, "  void RemoveStripe(string stripeID)")
   fmt.Fprintln(os.Stderr)
@@ -161,8 +161,23 @@ func main() {
       fmt.Fprintln(os.Stderr, "GetStripe requires 1 args")
       flag.Usage()
     }
-    argvalue0 := flag.Arg(1)
-    value0 := argvalue0
+    arg14 := flag.Arg(1)
+    mbTrans15 := thrift.NewTMemoryBufferLen(len(arg14))
+    defer mbTrans15.Close()
+    _, err16 := mbTrans15.WriteString(arg14)
+    if err16 != nil {
+      Usage()
+      return
+    }
+    factory17 := thrift.NewTJSONProtocolFactory()
+    jsProt18 := factory17.GetProtocol(mbTrans15)
+    argvalue0 := dcache.NewGetStripeRequest()
+    err19 := argvalue0.Read(context.Background(), jsProt18)
+    if err19 != nil {
+      Usage()
+      return
+    }
+    value0 := dcache.GetStripeRequest(argvalue0)
     fmt.Print(client.GetStripe(context.Background(), value0))
     fmt.Print("\n")
     break
@@ -171,19 +186,19 @@ func main() {
       fmt.Fprintln(os.Stderr, "PutStripe requires 1 args")
       flag.Usage()
     }
-    arg16 := flag.Arg(1)
-    mbTrans17 := thrift.NewTMemoryBufferLen(len(arg16))
-    defer mbTrans17.Close()
-    _, err18 := mbTrans17.WriteString(arg16)
-    if err18 != nil {
+    arg20 := flag.Arg(1)
+    mbTrans21 := thrift.NewTMemoryBufferLen(len(arg20))
+    defer mbTrans21.Close()
+    _, err22 := mbTrans21.WriteString(arg20)
+    if err22 != nil {
       Usage()
       return
     }
-    factory19 := thrift.NewTJSONProtocolFactory()
-    jsProt20 := factory19.GetProtocol(mbTrans17)
+    factory23 := thrift.NewTJSONProtocolFactory()
+    jsProt24 := factory23.GetProtocol(mbTrans21)
     argvalue0 := dcache.NewStripe()
-    err21 := argvalue0.Read(context.Background(), jsProt20)
-    if err21 != nil {
+    err25 := argvalue0.Read(context.Background(), jsProt24)
+    if err25 != nil {
       Usage()
       return
     }
